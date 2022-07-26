@@ -1,0 +1,40 @@
+name: api-test
+on:
+  workflow_call:
+    # 呼び出し側から渡されるシークレット情報
+    # secrets:
+    #   login_username:
+    #     description: ユーザ名
+    #     required: true
+    #   login_password:
+    #     description: パスワード
+    #     required: true
+
+jobs:
+  api_test:
+    name: api-test
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: CheckOut
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+
+      - name: Newman install
+        run: sudo npm install -g newman
+
+      - name: SetUp
+        if: always()
+        run: echo Start API testing.
+
+      - name: Run API API testing
+        working-directory: "./src"
+        run: newman run Tutorial_1.postman_collection.json -e env.json -d test_data.json
+
+      - name: CleanUp
+        if: always()
+        run: echo Finish API testing.
